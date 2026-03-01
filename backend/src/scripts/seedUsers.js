@@ -10,18 +10,33 @@ const seedUsers = async () => {
         await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/influencehub');
         console.log('MongoDB Connected.');
 
+        console.log('Clearing old data...');
+        await User.deleteMany({});
+
         console.log('Hashing default password for seeded users...');
         const salt = await bcrypt.genSalt(10);
         const defaultPassword = await bcrypt.hash('password123', salt);
 
         console.log('Generating realistic data...');
         const usersToInsert = [];
+
+        // Push the guaranteed Admin Account!
+        usersToInsert.push({
+            name: 'Master Admin',
+            email: 'admin@influencehub.com',
+            password: defaultPassword,
+            role: 'admin',
+            status: 'active',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
         const firstNames = ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Sarah', 'Charles', 'Karen', 'Alex', 'Chris', 'Taylor', 'Jordan', 'Casey'];
         const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
         const domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'influencehub.local', 'creator.network'];
 
-        // Let's generate 500 users
-        const TOTAL_USERS = 500;
+        // Let's generate 499 random users so we get 500 total
+        const TOTAL_USERS = 499;
 
         for (let i = 0; i < TOTAL_USERS; i++) {
             const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
