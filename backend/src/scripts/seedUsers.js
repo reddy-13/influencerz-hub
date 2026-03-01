@@ -31,12 +31,23 @@ const seedUsers = async () => {
             updatedAt: new Date()
         });
 
+        // Push the guaranteed Demo User!
+        usersToInsert.push({
+            name: 'Demo User',
+            email: 'demo@influencehub.com',
+            password: defaultPassword,
+            role: 'user',
+            status: 'active',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
         const firstNames = ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Sarah', 'Charles', 'Karen', 'Alex', 'Chris', 'Taylor', 'Jordan', 'Casey'];
         const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
         const domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'influencehub.local', 'creator.network'];
 
-        // Let's generate 499 random users so we get 500 total
-        const TOTAL_USERS = 499;
+        // Let's generate 498 random users so we get 500 total
+        const TOTAL_USERS = 498;
 
         for (let i = 0; i < TOTAL_USERS; i++) {
             const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
