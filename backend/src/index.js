@@ -11,15 +11,12 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Security Middleware
+const { apiLimiter } = require('./middlewares/rateLimiter');
+
+// Security Middleware
 app.use(helmet());
 
-// Rate Limiting (100 requests per 15 mins)
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// Rate Limiting (150 requests per 15 mins) globally
 app.use('/api/', apiLimiter);
 
 // Optimization Middleware
