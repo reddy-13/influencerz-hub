@@ -1,6 +1,6 @@
-# 🚀 InfluenceHub
+# 🚀 InfluencerzHub
 
-**InfluenceHub** is a highly scalable, full-stack Admin Dashboard and Metrics Console built for influencer network management. Engineered to handle large datasets natively through advanced architectures, it utilizes Multi-Core Node.js clustering, `Cache-Control` proxy directives, React/Vite optimizations, and Docker containerization.
+**InfluencerzHub** is a highly scalable, full-stack Admin Dashboard and Metrics Console built for influencer network management. Engineered to handle large datasets natively through advanced architectures, it utilizes Multi-Core Node.js clustering, `Cache-Control` proxy directives, React/Vite optimizations, and Docker containerization.
 
 ![Project Status](https://img.shields.io/badge/Status-Active-success)
 ![Node Version](https://img.shields.io/badge/Node.js-v18+-blue)
@@ -42,7 +42,7 @@ npm install
 Configure your `.env` file (`backend/.env`):
 ```env
 PORT=5050
-MONGO_URI=mongodb://127.0.0.1:27017/influencehub
+MONGO_URI=mongodb://127.0.0.1:27017/influencerz-hub
 JWT_SECRET=your_super_secret_jwt_key
 NODE_ENV=development
 ```
@@ -80,11 +80,18 @@ npm run dev
 
 ---
 
-## 🔐 Default Admin Credentials
+## 🔐 Default Credentials
 
-Because the seeding script was executed manually, it unconditionally generates a static **Master Admin** account to instantly access the Super Admin Dashboard:
+Because the seeding script is executed manually, it unconditionally generates static bootstrap accounts to instantly access the system without reverse engineering standard routing paths:
 
-- **Email:** `admin@influencehub.com`
+### 🦸 Master Admin
+Has access to the super-admin metrics cluster.
+- **Email:** `admin@influencerz-hub.com`
+- **Password:** `password123`
+
+### 👤 Demo User
+Standard authenticated network token role.
+- **Email:** `demo@influencerz-hub.com`
 - **Password:** `password123`
 
 ---

@@ -1,6 +1,6 @@
-# InfluenceHub
+# InfluencerzHub
 
-InfluenceHub is a YouTube influencer management platform designed to help influencers manage their content, analyze performance, and connect with brands for sponsorships. This project is built with a modular and scalable architecture using modern technologies.
+InfluencerzHub is a YouTube influencer management platform designed to help influencers manage their content, analyze performance, and connect with brands for sponsorships. This project is built with a modular and scalable architecture using modern technologies.
 
 ## Features
 

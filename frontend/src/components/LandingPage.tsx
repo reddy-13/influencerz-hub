@@ -69,7 +69,7 @@ const LandingPage = () => {
             }}>
                 <div className="logo cursor-default" style={{ gap: "8px" }}>
                     <Sparkles color="var(--primary)" size={22} style={{ animation: "pulse-slow 3s infinite" }} />
-                    InfluenceHub
+                    InfluencerzHub
                 </div>
                 <div className="nav-actions" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
                     <Link to="/signin" className="nav-link-btn" style={{ color: "var(--text-muted)" }}>Sign In</Link>
@@ -95,7 +95,7 @@ const LandingPage = () => {
                     </h1>
 
                     <p className="hero-subtitle animate-slide-up stagger-2" style={{ fontSize: "clamp(16px, 2vw, 20px)", maxWidth: "650px", margin: "0 auto", color: "var(--text-muted)" }}>
-                        Stop juggling chaotic spreadsheets, loose documents, and fragmented analytics. InfluenceHub is the all-in-one studio management platform designed exclusively for professional video creators.
+                        Stop juggling chaotic spreadsheets, loose documents, and fragmented analytics. InfluencerzHub is the all-in-one studio management platform designed exclusively for professional video creators.
                     </p>
 
                     <div className="hero-cta animate-fade-in stagger-3" style={{ marginTop: "48px", display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
@@ -128,7 +128,7 @@ const LandingPage = () => {
                             <div style={{ borderRadius: "8px 8px 0 0", overflow: "hidden", border: "1px solid var(--border)", borderBottom: "none" }}>
                                 <img
                                     src="/images/real-dashboard-ss.png"
-                                    alt="InfluenceHub Dashboard Snapshot"
+                                    alt="InfluencerzHub Dashboard Snapshot"
                                     style={{ width: "100%", height: "auto", display: "block", objectFit: "cover" }}
                                 />
                             </div>
@@ -145,7 +145,7 @@ const LandingPage = () => {
                         </p>
                         <p className="animate-slide-up stagger-2" style={{ fontSize: "20px", color: "var(--text-main)", fontWeight: "600", marginTop: "32px", padding: "24px", border: "1px solid var(--border)", borderRadius: "12px", background: "var(--bg-tertiary)" }}>
                             <LayoutDashboard size={24} color="var(--primary)" style={{ display: "inline", marginRight: "12px" }} />
-                            InfluenceHub brings the chaos into order.
+                            InfluencerzHub brings the chaos into order.
                         </p>
                     </div>
                 </section>
@@ -249,9 +249,9 @@ const LandingPage = () => {
 
             <footer className="landing-footer text-center py-8" style={{ padding: "48px 24px", textAlign: "center", background: "var(--bg-color)" }}>
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginBottom: "24px", color: "var(--text-main)", fontWeight: "600", fontSize: "18px" }}>
-                    <Sparkles size={20} color="var(--primary)" /> InfluenceHub
+                    <Sparkles size={20} color="var(--primary)" /> InfluencerzHub
                 </div>
-                <p className="text-muted" style={{ fontSize: "14px" }}>&copy; {new Date().getFullYear()} InfluenceHub Inc. Built exclusively for the Creator Economy.</p>
+                <p className="text-muted" style={{ fontSize: "14px" }}>&copy; {new Date().getFullYear()} InfluencerzHub Inc. Built exclusively for the Creator Economy.</p>
             </footer>
         </div>
     );

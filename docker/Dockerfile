@@ -1,4 +1,4 @@
-# Dockerfile for InfluenceHub Backend
+# Dockerfile for InfluencerzHub Backend
 FROM node:latest
 
 WORKDIR /app

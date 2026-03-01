@@ -47,7 +47,7 @@ const SignUp = () => {
                             <div style={{ background: "rgba(139, 92, 246, 0.2)", padding: "8px", borderRadius: "8px" }}>
                                 <UserPlus size={20} color="var(--primary)" />
                             </div>
-                            InfluenceHub
+                            InfluencerzHub
                         </div>
                         <h3 style={{ fontSize: "28px", fontWeight: "700", marginBottom: "16px", color: "white", lineHeight: "1.3" }}>
                             "This platform completely transformed how we run the channel. Sponsorships and production used to be a nightmare."

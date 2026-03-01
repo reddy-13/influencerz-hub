@@ -11,7 +11,7 @@ const Sidebar = () => {
         <div className="sidebar animate-fade-in">
             <div className="sidebar-brand animate-slide-up">
                 <Hexagon size={28} color="#8b5cf6" style={{ animation: "pulse-slow 3s infinite" }} />
-                InfluenceHub
+                InfluencerzHub
             </div>
             <nav className="desktop-sidebar-nav">
                 {user?.role !== 'admin' && (

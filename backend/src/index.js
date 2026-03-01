@@ -73,7 +73,7 @@ if (cluster.isPrimary) {
   const { errorHandler } = require('./middlewares/errorHandler');
 
   app.get('/', (req, res) => {
-    res.send(`InfluenceHub Backend Worker ${process.pid} is running`);
+    res.send(`InfluencerzHub Backend Worker ${process.pid} is running`);
   });
 
   app.use('/api/users', userRoutes);

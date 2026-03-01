@@ -33,14 +33,14 @@ const importData = async () => {
         // Wait, User schema hashes using pre('save'). If we use create with 'password123', it will hash it.
         const createdUser = await User.create({
             name: 'Demo Creator',
-            email: 'demo@influencehub.com',
+            email: 'demo@influencerz-hub.com',
             password: 'password123',
             role: 'user'
         });
 
         const adminUser = await User.create({
             name: 'Super Admin',
-            email: 'admin@influencehub.com',
+            email: 'admin@influencerz-hub.com',
             password: 'password123',
             role: 'admin'
         });

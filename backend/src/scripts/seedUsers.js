@@ -7,7 +7,7 @@ const User = require('../models/User');
 const seedUsers = async () => {
     try {
         console.log('Connecting to MongoDB...');
-        await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/influencehub');
+        await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/influencerz-hub');
         console.log('MongoDB Connected.');
 
         console.log('Clearing old data...');
@@ -23,7 +23,7 @@ const seedUsers = async () => {
         // Push the guaranteed Admin Account!
         usersToInsert.push({
             name: 'Master Admin',
-            email: 'admin@influencehub.com',
+            email: 'admin@influencerz-hub.com',
             password: defaultPassword,
             role: 'admin',
             status: 'active',
@@ -34,7 +34,7 @@ const seedUsers = async () => {
         // Push the guaranteed Demo User!
         usersToInsert.push({
             name: 'Demo User',
-            email: 'demo@influencehub.com',
+            email: 'demo@influencerz-hub.com',
             password: defaultPassword,
             role: 'user',
             status: 'active',
@@ -44,7 +44,7 @@ const seedUsers = async () => {
 
         const firstNames = ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Sarah', 'Charles', 'Karen', 'Alex', 'Chris', 'Taylor', 'Jordan', 'Casey'];
         const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
-        const domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'influencehub.local', 'creator.network'];
+        const domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'influencerz-hub.local', 'creator.network'];
 
         // Let's generate 498 random users so we get 500 total
         const TOTAL_USERS = 498;

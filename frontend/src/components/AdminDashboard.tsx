@@ -338,7 +338,7 @@ const AdminDashboard = () => {
                         <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "20px" }}>Recent Audit Logs</h3>
                         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                             {[
-                                { action: "Admin Privilege Granted", user: "system@influencehub.com", ip: "10.0.0.1", time: "2 mins ago" },
+                                { action: "Admin Privilege Granted", user: "system@influencerz-hub.com", ip: "10.0.0.1", time: "2 mins ago" },
                                 { action: "User Suspended (ID: 80a9)", user: "admin_david", ip: "192.168.1.44", time: "1 hour ago" },
                                 { action: "Stripe Webhook Secret Modified", user: "admin_david", ip: "192.168.1.44", time: "3 hours ago" },
                                 { action: "Failed Login Attempt", user: "unknown", ip: "45.22.19.122", time: "5 hours ago" }

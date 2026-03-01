@@ -53,11 +53,11 @@ const SignIn = () => {
                         <LogIn size={16} /> {loading ? 'Signing In...' : 'Sign In'}
                     </button>
                     <div className="text-center mt-4" style={{ display: "flex", justifyContent: "center", gap: "16px" }}>
-                        <button type="button" onClick={() => { setEmail('demo@influencehub.com'); setPassword('password123'); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
+                        <button type="button" onClick={() => { setEmail('demo@influencerz-hub.com'); setPassword('password123'); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
                             Demo Creator
                         </button>
                         <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>|</span>
-                        <button type="button" onClick={() => { setEmail('admin@influencehub.com'); setPassword('password123'); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
+                        <button type="button" onClick={() => { setEmail('admin@influencerz-hub.com'); setPassword('password123'); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
                             Admin Access
                         </button>
                     </div>
