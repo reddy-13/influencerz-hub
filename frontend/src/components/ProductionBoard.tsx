@@ -50,6 +50,8 @@ const ProductionBoard = () => {
     const [activeTask, setActiveTask] = useState<TaskData | null>(null);
     const [modalScript, setModalScript] = useState("");
     const [modalSubtasks, setModalSubtasks] = useState<{ id: string; title: string; completed: boolean }[]>([]);
+    const [modalContent, setModalContent] = useState("");
+    const [modalTag, setModalTag] = useState("Draft");
     const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
     const [activeTab, setActiveTab] = useState<"script" | "subtasks">("script");
 
@@ -106,6 +108,27 @@ const ProductionBoard = () => {
             return;
         }
 
+        // Optimistic UI push
+        const optimisticTask = {
+            _id: `temp-${Date.now()}`,
+            content: newTaskText,
+            status: columnId,
+            tag: newTaskTag,
+            order: columns[columnId].tasks.length,
+            createdAt: new Date().toISOString()
+        };
+
+        setColumns((prev: any) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                [columnId]: {
+                    ...prev[columnId],
+                    tasks: [...prev[columnId].tasks, optimisticTask]
+                }
+            };
+        });
+
         // Mutation push
         createTask({
             content: newTaskText,
@@ -122,6 +145,8 @@ const ProductionBoard = () => {
         setActiveTask(task);
         setModalScript(task.script || "");
         setModalSubtasks(task.subtasks || []);
+        setModalContent(task.content);
+        setModalTag(task.tag);
         setActiveTab("script");
     };
 
@@ -130,10 +155,24 @@ const ProductionBoard = () => {
         updateTask({
             id: activeTask._id,
             data: {
+                content: modalContent,
+                tag: modalTag,
                 script: modalScript,
                 subtasks: modalSubtasks
             }
         });
+
+        // Optimistic UI for edit
+        setColumns((prev: any) => {
+            if (!prev) return prev;
+            const newCols = { ...prev };
+            const col = newCols[activeTask.status];
+            if (col) {
+                col.tasks = col.tasks.map((t: any) => t._id === activeTask._id ? { ...t, content: modalContent, tag: modalTag, script: modalScript, subtasks: modalSubtasks } : t);
+            }
+            return newCols;
+        });
+
         setActiveTask(null);
     };
 
@@ -149,7 +188,16 @@ const ProductionBoard = () => {
     };
 
     const deleteSubtask = (id: string) => {
-        setModalSubtasks(modalSubtasks.filter(st => st.id !== id));
+        if (window.confirm("Are you sure you want to delete this subtask?")) {
+            setModalSubtasks(modalSubtasks.filter(st => st.id !== id));
+        }
+    };
+
+    const handleDeleteTask = (e: React.MouseEvent, taskId: string) => {
+        e.stopPropagation();
+        if (window.confirm("Are you sure you want to delete this task?")) {
+            deleteTask(taskId);
+        }
     };
 
     if (isLoading || !columns) {
@@ -223,7 +271,7 @@ const ProductionBoard = () => {
                                                                 </span>
                                                                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                                                                     <button
-                                                                        onClick={(e) => { e.stopPropagation(); deleteTask(task._id); }}
+                                                                        onClick={(e) => handleDeleteTask(e, task._id)}
                                                                         style={{ background: "none", border: "none", color: "var(--danger)", opacity: 0.6, cursor: "pointer", padding: 0 }}
                                                                     >
                                                                         <Trash2 size={14} />
@@ -321,17 +369,37 @@ const ProductionBoard = () => {
                     >
                         {/* Modal Header */}
                         <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div>
-                                <span style={{
-                                    fontSize: "10px",
-                                    background: activeTask.tag === 'Urgent' ? 'rgba(239, 68, 68, 0.2)' : activeTask.tag === 'Sponsor' ? 'rgba(139, 92, 246, 0.2)' : activeTask.tag === 'Research' ? 'rgba(59, 130, 246, 0.2)' : 'var(--primary)',
-                                    color: activeTask.tag === 'Urgent' ? '#ef4444' : activeTask.tag === 'Sponsor' ? '#a78bfa' : activeTask.tag === 'Research' ? '#60a5fa' : 'var(--primary-text)',
-                                    fontWeight: "600",
-                                    padding: "4px 8px",
-                                    borderRadius: "4px",
-                                    marginRight: "10px"
-                                }}>{activeTask.tag}</span>
-                                <h2 style={{ display: "inline-block", margin: 0, fontSize: "20px" }}>{activeTask.content}</h2>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, marginRight: "20px" }}>
+                                <select
+                                    value={modalTag}
+                                    onChange={(e) => setModalTag(e.target.value)}
+                                    style={{
+                                        background: modalTag === 'Urgent' ? 'rgba(239, 68, 68, 0.2)' : modalTag === 'Sponsor' ? 'rgba(139, 92, 246, 0.2)' : modalTag === 'Research' ? 'rgba(59, 130, 246, 0.2)' : 'var(--primary)',
+                                        color: modalTag === 'Urgent' ? '#ef4444' : modalTag === 'Sponsor' ? '#a78bfa' : modalTag === 'Research' ? '#60a5fa' : 'var(--primary-text)',
+                                        border: "none",
+                                        fontWeight: "600",
+                                        padding: "6px 10px",
+                                        borderRadius: "4px",
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                        outline: "none"
+                                    }}
+                                >
+                                    <option value="Draft">Draft</option>
+                                    <option value="Research">Research</option>
+                                    <option value="Urgent">Urgent</option>
+                                    <option value="Sponsor">Sponsor</option>
+                                </select>
+                                <input
+                                    value={modalContent}
+                                    onChange={(e) => setModalContent(e.target.value)}
+                                    autoFocus
+                                    style={{
+                                        background: "transparent", border: "none", fontSize: "20px", fontWeight: "bold",
+                                        color: "var(--text-main)", outline: "none", flex: 1
+                                    }}
+                                    placeholder="Task Title..."
+                                />
                             </div>
                             <button onClick={closeTaskModal} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}>
                                 <X size={24} />
