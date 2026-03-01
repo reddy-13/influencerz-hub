@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { videoApi, sponsorshipApi, taskApi } from '../services/api';
+import { videoApi, sponsorshipApi, taskApi, expenseApi } from '../services/api';
 
 export interface VideoData {
     _id: string;
@@ -25,6 +25,14 @@ export interface TaskData {
     tag: string;
     order: number;
     createdAt: string;
+}
+
+export interface ExpenseData {
+    _id: string;
+    category: string;
+    amount: number;
+    description: string;
+    date: string;
 }
 
 // --- Video Hooks ---
@@ -97,6 +105,24 @@ export const useDeleteTask = () => {
         mutationFn: taskApi.delete,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        },
+    });
+};
+
+// --- Expense Hooks ---
+export const useExpenses = () => {
+    return useQuery<ExpenseData[]>({
+        queryKey: ['expenses'],
+        queryFn: expenseApi.getAll as () => Promise<ExpenseData[]>,
+    });
+};
+
+export const useCreateExpense = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: expenseApi.create,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['expenses'] });
         },
     });
 };

@@ -28,6 +28,15 @@ export const taskApi = {
 };
 
 /**
+ * Expenses Service
+ */
+export const expenseApi = {
+    getAll: () => apiClient.get<unknown, unknown[]>('/expenses'),
+    create: (data: Record<string, unknown>) => apiClient.post<unknown, unknown>('/expenses', data),
+    delete: (id: string) => apiClient.delete<unknown, { message: string }>(`/expenses/${id}`),
+};
+
+/**
  * Auth Service
  */
 export const authApi = {

@@ -67,6 +67,7 @@ if (cluster.isPrimary) {
   const videoRoutes = require('./routes/videoRoutes');
   const sponsorshipRoutes = require('./routes/sponsorshipRoutes');
   const taskRoutes = require('./routes/taskRoutes');
+  const expenseRoutes = require('./routes/expenseRoutes');
   const { errorHandler } = require('./middlewares/errorHandler');
 
   app.get('/', (req, res) => {
@@ -77,6 +78,7 @@ if (cluster.isPrimary) {
   app.use('/api/videos', videoRoutes);
   app.use('/api/sponsorships', sponsorshipRoutes);
   app.use('/api/tasks', taskRoutes);
+  app.use('/api/expenses', expenseRoutes);
 
   // Global Error Handler (MUST BE LAST)
   app.use(errorHandler);
