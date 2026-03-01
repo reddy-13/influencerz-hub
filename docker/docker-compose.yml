@@ -13,6 +13,7 @@ services:
       - NODE_ENV=development
       - PORT=5050
       - MONGO_URI=mongodb://mongo:27017/influencerz-hub
+      - REDIS_URI=redis://redis:6379
 
   mongo:
     image: mongo:latest
@@ -21,6 +22,12 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+
+  redis:
+    image: redis:alpine
+    container_name: influencerz-hub-redis
+    ports:
+      - "6379:6379"
 
 volumes:
   mongo-data:

@@ -4,6 +4,10 @@ const Video = require('../models/Video');
 const Sponsorship = require('../models/Sponsorship');
 const { AppError } = require('../middlewares/errorHandler');
 const asyncHandler = require('../utils/asyncHandler');
+const Redis = require('ioredis');
+
+const redisUrl = process.env.REDIS_URI || 'redis://127.0.0.1:6379';
+const redis = new Redis(redisUrl);
 
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
@@ -93,12 +97,8 @@ exports.getMe = asyncHandler(async (req, res) => {
 });
 
 // Server-Side Caching (Scale: 100M Users)
-// In a true enterprise environment, this would be Redis. Here, we use high-speed Node Memory.
-const cache = {
-    metrics: null,
-    lastFetched: 0
-};
-const CACHE_TTL = 1000 * 60 * 5; // 5 Minute Cache Lock 
+// In a true enterprise environment, this would be Redis. Here, we use high-speed Node Memory. -> Now upgraded to real Redis!
+const CACHE_TTL_SECONDS = 300; // 5 Minute Cache Lock 
 
 exports.getAdminMetrics = asyncHandler(async (req, res) => {
     if (req.user.role !== 'admin') {
@@ -112,9 +112,11 @@ exports.getAdminMetrics = asyncHandler(async (req, res) => {
 
     let aggregateMetrics;
 
-    // Cache short-circuit: At 100M users, countDocuments() will cause an IO bottleneck.
-    if (cache.metrics && (Date.now() - cache.lastFetched < CACHE_TTL)) {
-        aggregateMetrics = cache.metrics;
+    // Cache short-circuit: Check Redis for existing metrics
+    const cachedMetrics = await redis.get('admin_metrics:overview');
+
+    if (cachedMetrics) {
+        aggregateMetrics = JSON.parse(cachedMetrics);
     } else {
         // Run aggregate metrics in parallel for speed optimization
         const data = await Promise.all([
@@ -136,9 +138,8 @@ exports.getAdminMetrics = asyncHandler(async (req, res) => {
             totalTasks: data[5]
         };
 
-        // Persist to cluster memory cache lock
-        cache.metrics = aggregateMetrics;
-        cache.lastFetched = Date.now();
+        // Persist to cluster memory cache lock -> Persist to Redis
+        await redis.setex('admin_metrics:overview', CACHE_TTL_SECONDS, JSON.stringify(aggregateMetrics));
     }
 
     const { totalUsers, activeUsers, suspendedUsers, totalVideos, totalSponsorships, totalTasks } = aggregateMetrics;
