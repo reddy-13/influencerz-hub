@@ -16,8 +16,7 @@ const SponsorshipMarketplace = () => {
         createSponsorship(
             {
                 brand,
-                amount: Number(amount),
-                user: "6472b535d4f3b890982abcd1" // Mock user ID
+                amount: Number(amount)
             },
             {
                 onSuccess: () => {

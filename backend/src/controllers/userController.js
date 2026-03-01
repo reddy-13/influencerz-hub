@@ -118,6 +118,9 @@ exports.getAdminMetrics = asyncHandler(async (req, res) => {
     if (cachedMetrics) {
         aggregateMetrics = JSON.parse(cachedMetrics);
     } else {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
         // Run aggregate metrics in parallel for speed optimization
         const data = await Promise.all([
             // Use estimatedDocumentCount() instead of countDocuments() for total counts (1000x faster globally)
@@ -126,7 +129,14 @@ exports.getAdminMetrics = asyncHandler(async (req, res) => {
             User.countDocuments({ status: 'suspended' }),
             Video.estimatedDocumentCount(),
             Sponsorship.estimatedDocumentCount(),
-            Task.estimatedDocumentCount()
+            Task.estimatedDocumentCount(),
+            // Total Revenue Aggregation
+            Sponsorship.aggregate([{ $group: { _id: null, total: { $sum: '$amount' } } }]),
+            // Monthly Revenue Aggregation
+            Sponsorship.aggregate([
+                { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+                { $group: { _id: null, total: { $sum: '$amount' } } }
+            ])
         ]);
 
         aggregateMetrics = {
@@ -135,18 +145,16 @@ exports.getAdminMetrics = asyncHandler(async (req, res) => {
             suspendedUsers: data[2],
             totalVideos: data[3],
             totalSponsorships: data[4],
-            totalTasks: data[5]
+            totalTasks: data[5],
+            totalRevenue: data[6][0]?.total || 0,
+            monthlyRevenue: data[7][0]?.total || 0
         };
 
         // Persist to cluster memory cache lock -> Persist to Redis
         await redis.setex('admin_metrics:overview', CACHE_TTL_SECONDS, JSON.stringify(aggregateMetrics));
     }
 
-    const { totalUsers, activeUsers, suspendedUsers, totalVideos, totalSponsorships, totalTasks } = aggregateMetrics;
-
-    // Mock revenue metrics
-    const totalRevenue = 145000;
-    const monthlyRevenue = 12400;
+    const { totalUsers, activeUsers, suspendedUsers, totalVideos, totalSponsorships, totalTasks, totalRevenue, monthlyRevenue } = aggregateMetrics;
 
     // Optimized bulk query utilizing lean() to skip mongoose document hydrations
     const users = await User.find()

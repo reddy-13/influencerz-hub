@@ -19,8 +19,7 @@ const VideoManager = () => {
             {
                 title,
                 url,
-                description,
-                user: "6472b535d4f3b890982abcd1" // Mock Object ID for user
+                description
             },
             {
                 onSuccess: () => {
