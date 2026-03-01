@@ -24,8 +24,9 @@ const SignIn = () => {
                 setUser(resp.user);
                 navigate(resp.user.role === 'admin' ? '/admin' : '/dashboard');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to sign in');
+        } catch (err: unknown) {
+            const errorObj = err as { response?: { data?: { message?: string } } };
+            setError(errorObj.response?.data?.message || 'Login failed');
         } finally {
             setLoading(false);
         }

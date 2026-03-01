@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import type { AdminResponse, AuthResponse, GenericResponse } from '../types';
 
 /**
  * Videos Service
@@ -30,10 +31,10 @@ export const taskApi = {
  * Auth Service
  */
 export const authApi = {
-    login: (data: Record<string, string>) => apiClient.post<unknown, any>('/users/login', data),
-    register: (data: Record<string, string>) => apiClient.post<unknown, any>('/users/register', data),
-    getMe: () => apiClient.get<unknown, any>('/users/me'),
-    getAdminMetrics: (page: number = 1, limit: number = 10) => apiClient.get<unknown, any>(`/users/admin-metrics?page=${page}&limit=${limit}`),
-    logout: () => apiClient.get<unknown, any>('/users/logout'),
-    updateUserStatus: (id: string, status: string) => apiClient.put<unknown, any>(`/users/${id}/status`, { status }),
+    login: (data: Record<string, string>) => apiClient.post<unknown, AuthResponse>('/users/login', data),
+    register: (data: Record<string, string>) => apiClient.post<unknown, AuthResponse>('/users/register', data),
+    getMe: () => apiClient.get<unknown, { success: boolean, data: import('../types').User }>('/users/me'),
+    getAdminMetrics: (page: number = 1, limit: number = 10) => apiClient.get<unknown, AdminResponse>(`/users/admin-metrics?page=${page}&limit=${limit}`),
+    logout: () => apiClient.get<unknown, GenericResponse>('/users/logout'),
+    updateUserStatus: (id: string, status: string) => apiClient.put<unknown, GenericResponse>(`/users/${id}/status`, { status }),
 };

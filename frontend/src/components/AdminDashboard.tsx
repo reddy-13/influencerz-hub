@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Users, Kanban, Activity, Ban, CheckCircle, TrendingUp, Settings, CreditCard, ShieldAlert, ShieldCheck, Lock } from "lucide-react";
 import { authApi } from "../services/api";
 
+import type { AdminMetrics, User } from "../types";
+
 const AdminDashboard = () => {
-    const [metrics, setMetrics] = useState<any>(null);
-    const [users, setUsers] = useState<any[]>([]);
+    const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
+    const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [activeTab, setActiveTab] = useState<'overview' | 'financials' | 'settings' | 'security'>('overview');
@@ -51,8 +53,9 @@ const AdminDashboard = () => {
                     setTotalPages(res.pagination.totalPages);
                 }
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to load admin metrics.");
+        } catch (err: unknown) {
+            const errorObj = err as { response?: { data?: { message?: string } } };
+            setError(errorObj.response?.data?.message || "Failed to load admin metrics.");
         } finally {
             setLoading(false);
         }
@@ -78,8 +81,9 @@ const AdminDashboard = () => {
                     await authApi.updateUserStatus(userId, newStatus);
                     await fetchAdminData();
                     showToast(`User successfully ${newStatus}.`, "success");
-                } catch (err: any) {
-                    showToast(err.response?.data?.message || "Failed to update status", "error");
+                } catch (err: unknown) {
+                    const errorObj = err as { response?: { data?: { message?: string } } };
+                    showToast(errorObj.response?.data?.message || "Failed to update status", "error");
                 }
             },
             newStatus === 'suspended'
@@ -189,7 +193,7 @@ const AdminDashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.map((u: any) => (
+                                    {users.map((u: User) => (
                                         <tr key={u._id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
                                             <td style={{ padding: "12px" }}>{u.name}</td>
                                             <td style={{ padding: "12px", color: "var(--text-muted)" }}>{u.email}</td>
@@ -216,7 +220,7 @@ const AdminDashboard = () => {
                                             <td style={{ padding: "12px", textAlign: "right" }}>
                                                 {u.role !== 'admin' && (
                                                     <button
-                                                        onClick={() => toggleUserStatus(u._id, u.status || 'active', u.role)}
+                                                        onClick={() => toggleUserStatus(u._id!, u.status || 'active', u.role)}
                                                         className="btn"
                                                         style={{
                                                             padding: "6px 12px", fontSize: "12px",
