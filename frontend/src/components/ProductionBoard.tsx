@@ -296,6 +296,23 @@ const ProductionBoard = () => {
                                                             <p style={{ margin: 0, fontSize: "13px", color: "var(--text-main)", fontWeight: "500", lineHeight: "1.4" }}>
                                                                 {task.content}
                                                             </p>
+
+                                                            {task.subtasks && task.subtasks.length > 0 && (
+                                                                <div style={{ marginTop: "12px" }}>
+                                                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}>
+                                                                        <span>Subtasks</span>
+                                                                        <span>{task.subtasks.filter((st: any) => st.completed).length}/{task.subtasks.length}</span>
+                                                                    </div>
+                                                                    <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden" }}>
+                                                                        <div style={{
+                                                                            width: `${(task.subtasks.filter((st: any) => st.completed).length / task.subtasks.length) * 100}%`,
+                                                                            height: "100%",
+                                                                            background: "var(--primary)",
+                                                                            transition: "width 0.3s ease"
+                                                                        }} />
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px", alignItems: "center" }}>
                                                                 <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
                                                                     {new Date(task.createdAt).toLocaleDateString()}
@@ -449,17 +466,24 @@ const ProductionBoard = () => {
                         {/* Modal Body */}
                         <div style={{ flex: 1, overflowY: "auto", position: "relative" }}>
                             {activeTab === "script" ? (
-                                <textarea
-                                    style={{
-                                        width: "100%", height: "100%", padding: "24px",
-                                        background: "transparent", border: "none", outline: "none",
-                                        color: "var(--text-main)", fontSize: "15px", lineHeight: "1.6",
-                                        resize: "none"
-                                    }}
-                                    placeholder="Write your video script, ideas, and rich notes here..."
-                                    value={modalScript}
-                                    onChange={(e) => setModalScript(e.target.value)}
-                                />
+                                <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+                                    <textarea
+                                        style={{
+                                            flex: 1, width: "100%", padding: "32px",
+                                            background: "rgba(0,0,0,0.1)", border: "none", outline: "none",
+                                            color: "var(--text-main)", fontSize: "16px", lineHeight: "1.8",
+                                            resize: "none", fontFamily: "'Inter', sans-serif"
+                                        }}
+                                        placeholder="Type your script here. Use markdown for better organization..."
+                                        value={modalScript}
+                                        onChange={(e) => setModalScript(e.target.value)}
+                                    />
+                                    <div style={{ padding: "12px 24px", borderTop: "1px solid var(--border)", background: "rgba(0,0,0,0.3)", display: "flex", gap: "20px", fontSize: "12px", color: "var(--text-muted)" }}>
+                                        <span>Words: {modalScript.trim() ? modalScript.trim().split(/\s+/).length : 0}</span>
+                                        <span>Characters: {modalScript.length}</span>
+                                        <span>Est. Reading Time: {Math.ceil((modalScript.trim() ? modalScript.trim().split(/\s+/).length : 0) / 180)} min</span>
+                                    </div>
+                                </div>
                             ) : (
                                 <div style={{ padding: "24px" }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
