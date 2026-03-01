@@ -16,6 +16,17 @@ const TaskSchema = new mongoose.Schema(
             enum: ['ideas', 'scripting', 'filming', 'editing', 'published'],
             default: 'ideas',
         },
+        script: {
+            type: String,
+            default: '',
+        },
+        subtasks: [
+            {
+                id: { type: String, required: true },
+                title: { type: String, required: true },
+                completed: { type: Boolean, default: false }
+            }
+        ],
         order: {
             type: Number,
             default: 0,

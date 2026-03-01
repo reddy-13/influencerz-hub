@@ -24,6 +24,8 @@ export interface TaskData {
     status: 'ideas' | 'scripting' | 'filming' | 'editing' | 'published';
     tag: string;
     order: number;
+    script?: string;
+    subtasks?: { id: string; title: string; completed: boolean }[];
     createdAt: string;
 }
 
@@ -103,6 +105,16 @@ export const useDeleteTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: taskApi.delete,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        },
+    });
+};
+
+export const useUpdateTask = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: any }) => taskApi.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
         },

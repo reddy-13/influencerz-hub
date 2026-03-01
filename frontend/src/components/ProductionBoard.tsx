@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
-import { GripVertical, Plus, Trash2 } from "lucide-react";
-import { useTasks, useCreateTask, useReorderTasks, useDeleteTask } from "../hooks/useQueries";
+import { GripVertical, Plus, Trash2, X, CheckSquare, FileText, CheckCircle2, Circle } from "lucide-react";
+import { useTasks, useCreateTask, useReorderTasks, useDeleteTask, useUpdateTask } from "../hooks/useQueries";
 import type { TaskData } from "../hooks/useQueries";
+import { v4 as uuidv4 } from 'uuid';
 
 const columnOrder = ["ideas", "scripting", "filming", "editing", "published"];
 
@@ -38,11 +39,19 @@ const ProductionBoard = () => {
     const { mutate: createTask } = useCreateTask();
     const { mutate: reorderTasks } = useReorderTasks();
     const { mutate: deleteTask } = useDeleteTask();
+    const { mutate: updateTask } = useUpdateTask();
 
     const [columns, setColumns] = useState<any>(null);
     const [newTaskText, setNewTaskText] = useState("");
     const [newTaskTag, setNewTaskTag] = useState("Draft");
     const [isAddingTaskTo, setIsAddingTaskTo] = useState<string | null>(null);
+
+    // Modal state overrides
+    const [activeTask, setActiveTask] = useState<TaskData | null>(null);
+    const [modalScript, setModalScript] = useState("");
+    const [modalSubtasks, setModalSubtasks] = useState<{ id: string; title: string; completed: boolean }[]>([]);
+    const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
+    const [activeTab, setActiveTab] = useState<"script" | "subtasks">("script");
 
     // Sync server tasks to local columns state when loaded
     useEffect(() => {
@@ -109,6 +118,40 @@ const ProductionBoard = () => {
         setIsAddingTaskTo(null);
     };
 
+    const openTaskModal = (task: TaskData) => {
+        setActiveTask(task);
+        setModalScript(task.script || "");
+        setModalSubtasks(task.subtasks || []);
+        setActiveTab("script");
+    };
+
+    const closeTaskModal = () => {
+        if (!activeTask) return;
+        updateTask({
+            id: activeTask._id,
+            data: {
+                script: modalScript,
+                subtasks: modalSubtasks
+            }
+        });
+        setActiveTask(null);
+    };
+
+    const handleAddSubtask = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && newSubtaskTitle.trim()) {
+            setModalSubtasks([...modalSubtasks, { id: uuidv4(), title: newSubtaskTitle, completed: false }]);
+            setNewSubtaskTitle("");
+        }
+    };
+
+    const toggleSubtask = (id: string) => {
+        setModalSubtasks(modalSubtasks.map(st => st.id === id ? { ...st, completed: !st.completed } : st));
+    };
+
+    const deleteSubtask = (id: string) => {
+        setModalSubtasks(modalSubtasks.filter(st => st.id !== id));
+    };
+
     if (isLoading || !columns) {
         return (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "var(--primary)" }}>
@@ -165,6 +208,7 @@ const ProductionBoard = () => {
                                                                 boxShadow: snapshot.isDragging ? "0 15px 30px rgba(0,0,0,0.5)" : "none",
                                                                 opacity: snapshot.isDragging ? 0.9 : 1,
                                                             }}
+                                                            onClick={() => openTaskModal(task)}
                                                         >
                                                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
                                                                 <span style={{
@@ -179,7 +223,7 @@ const ProductionBoard = () => {
                                                                 </span>
                                                                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                                                                     <button
-                                                                        onClick={() => deleteTask(task._id)}
+                                                                        onClick={(e) => { e.stopPropagation(); deleteTask(task._id); }}
                                                                         style={{ background: "none", border: "none", color: "var(--danger)", opacity: 0.6, cursor: "pointer", padding: 0 }}
                                                                     >
                                                                         <Trash2 size={14} />
@@ -262,6 +306,113 @@ const ProductionBoard = () => {
                     })}
                 </DragDropContext>
             </div>
+
+            {/* Task Extended Editor Modal */}
+            {activeTask && (
+                <div style={{
+                    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+                    background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)",
+                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+                }} onClick={closeTaskModal}>
+                    <div
+                        className="card animate-fade-in"
+                        style={{ width: "90%", maxWidth: "800px", height: "85vh", display: "flex", flexDirection: "column", padding: "0" }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal Header */}
+                        <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                                <span style={{
+                                    fontSize: "10px",
+                                    background: activeTask.tag === 'Urgent' ? 'rgba(239, 68, 68, 0.2)' : activeTask.tag === 'Sponsor' ? 'rgba(139, 92, 246, 0.2)' : activeTask.tag === 'Research' ? 'rgba(59, 130, 246, 0.2)' : 'var(--primary)',
+                                    color: activeTask.tag === 'Urgent' ? '#ef4444' : activeTask.tag === 'Sponsor' ? '#a78bfa' : activeTask.tag === 'Research' ? '#60a5fa' : 'var(--primary-text)',
+                                    fontWeight: "600",
+                                    padding: "4px 8px",
+                                    borderRadius: "4px",
+                                    marginRight: "10px"
+                                }}>{activeTask.tag}</span>
+                                <h2 style={{ display: "inline-block", margin: 0, fontSize: "20px" }}>{activeTask.content}</h2>
+                            </div>
+                            <button onClick={closeTaskModal} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}>
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        {/* Modal Tabs */}
+                        <div style={{ display: "flex", borderBottom: "1px solid var(--border)", background: "rgba(0,0,0,0.2)" }}>
+                            <button
+                                onClick={() => setActiveTab("script")}
+                                style={{
+                                    flex: 1, padding: "16px", background: "none", border: "none",
+                                    color: activeTab === "script" ? "var(--primary)" : "var(--text-muted)",
+                                    borderBottom: activeTab === "script" ? "2px solid var(--primary)" : "2px solid transparent",
+                                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontWeight: "600"
+                                }}
+                            >
+                                <FileText size={18} /> Script & Notes
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("subtasks")}
+                                style={{
+                                    flex: 1, padding: "16px", background: "none", border: "none",
+                                    color: activeTab === "subtasks" ? "var(--primary)" : "var(--text-muted)",
+                                    borderBottom: activeTab === "subtasks" ? "2px solid var(--primary)" : "2px solid transparent",
+                                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontWeight: "600"
+                                }}
+                            >
+                                <CheckSquare size={18} /> Subtasks Checklist
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div style={{ flex: 1, overflowY: "auto", position: "relative" }}>
+                            {activeTab === "script" ? (
+                                <textarea
+                                    style={{
+                                        width: "100%", height: "100%", padding: "24px",
+                                        background: "transparent", border: "none", outline: "none",
+                                        color: "var(--text-main)", fontSize: "15px", lineHeight: "1.6",
+                                        resize: "none"
+                                    }}
+                                    placeholder="Write your video script, ideas, and rich notes here..."
+                                    value={modalScript}
+                                    onChange={(e) => setModalScript(e.target.value)}
+                                />
+                            ) : (
+                                <div style={{ padding: "24px" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+                                        <input
+                                            className="input-field"
+                                            style={{ flex: 1 }}
+                                            placeholder="Add subtask and hit Enter..."
+                                            value={newSubtaskTitle}
+                                            onChange={(e) => setNewSubtaskTitle(e.target.value)}
+                                            onKeyDown={handleAddSubtask}
+                                        />
+                                    </div>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                        {modalSubtasks.map((st) => (
+                                            <div key={st.id} style={{
+                                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                                padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "8px",
+                                                border: "1px solid var(--border)", opacity: st.completed ? 0.6 : 1
+                                            }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }} onClick={() => toggleSubtask(st.id)}>
+                                                    {st.completed ? <CheckCircle2 size={20} color="var(--primary)" /> : <Circle size={20} color="var(--text-muted)" />}
+                                                    <span style={{ fontSize: "15px", textDecoration: st.completed ? "line-through" : "none" }}>{st.title}</span>
+                                                </div>
+                                                <button onClick={() => deleteSubtask(st.id)} style={{ background: "none", border: "none", color: "var(--danger)", opacity: 0.6, cursor: "pointer" }}>
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -74,3 +74,27 @@ exports.deleteTask = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({ message: 'Task removed' });
 });
+
+// @desc    Update task details (script, subtasks)
+// @route   PUT /api/tasks/:id
+// @access  Private
+exports.updateTask = asyncHandler(async (req, res, next) => {
+    let task = await Task.findOne({ _id: req.params.id, user: req.user.id });
+
+    if (!task) {
+        return next(new AppError('Task not found', 404));
+    }
+
+    const { content, status, tag, order, script, subtasks } = req.body;
+
+    if (content !== undefined) task.content = content;
+    if (status !== undefined) task.status = status;
+    if (tag !== undefined) task.tag = tag;
+    if (order !== undefined) task.order = order;
+    if (script !== undefined) task.script = script;
+    if (subtasks !== undefined) task.subtasks = subtasks;
+
+    await task.save();
+
+    res.status(200).json(task);
+});

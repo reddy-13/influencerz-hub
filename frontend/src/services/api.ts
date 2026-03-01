@@ -25,6 +25,7 @@ export const taskApi = {
     create: (data: { content: string; status: string; tag?: string }) => apiClient.post<unknown, unknown>('/tasks', data),
     reorder: (tasks: { _id: string; status: string; order: number }[]) => apiClient.put<unknown, { message: string }>('/tasks/reorder', { tasks }),
     delete: (id: string) => apiClient.delete<unknown, { message: string }>(`/tasks/${id}`),
+    update: (id: string, data: any) => apiClient.put<unknown, unknown>(`/tasks/${id}`, data),
 };
 
 /**
