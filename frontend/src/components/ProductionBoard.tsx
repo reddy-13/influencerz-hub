@@ -55,6 +55,10 @@ const ProductionBoard = () => {
     const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
     const [activeTab, setActiveTab] = useState<"script" | "subtasks">("script");
 
+    // UI Modal states for deletion
+    const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+    const [subtaskToDelete, setSubtaskToDelete] = useState<string | null>(null);
+
     // Sync server tasks to local columns state when loaded
     useEffect(() => {
         if (serverTasks) {
@@ -188,15 +192,25 @@ const ProductionBoard = () => {
     };
 
     const deleteSubtask = (id: string) => {
-        if (window.confirm("Are you sure you want to delete this subtask?")) {
-            setModalSubtasks(modalSubtasks.filter(st => st.id !== id));
+        setSubtaskToDelete(id);
+    };
+
+    const confirmDeleteSubtask = () => {
+        if (subtaskToDelete) {
+            setModalSubtasks(modalSubtasks.filter(st => st.id !== subtaskToDelete));
+            setSubtaskToDelete(null);
         }
     };
 
     const handleDeleteTask = (e: React.MouseEvent, taskId: string) => {
         e.stopPropagation();
-        if (window.confirm("Are you sure you want to delete this task?")) {
-            deleteTask(taskId);
+        setTaskToDelete(taskId);
+    };
+
+    const confirmDeleteTask = () => {
+        if (taskToDelete) {
+            deleteTask(taskToDelete);
+            setTaskToDelete(null);
         }
     };
 
@@ -477,6 +491,34 @@ const ProductionBoard = () => {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {(taskToDelete || subtaskToDelete) && (
+                <div style={{
+                    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+                    background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000
+                }}>
+                    <div className="card animate-fade-in" style={{ padding: "24px", maxWidth: "400px", textAlign: "center", background: "var(--background-card)" }}>
+                        <h3 style={{ marginTop: 0, color: "var(--text-main)" }}>Confirm Deletion</h3>
+                        <p style={{ color: "var(--text-muted)", marginBottom: "24px" }}>
+                            Are you sure you want to delete this {taskToDelete ? 'task' : 'subtask'}? This action cannot be undone.
+                        </p>
+                        <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+                            <button className="btn-secondary" onClick={() => { setTaskToDelete(null); setSubtaskToDelete(null); }}>
+                                Cancel
+                            </button>
+                            <button
+                                className="btn-primary"
+                                style={{ background: "var(--danger)", color: "white", border: "none" }}
+                                onClick={() => taskToDelete ? confirmDeleteTask() : confirmDeleteSubtask()}
+                            >
+                                Delete
+                            </button>
                         </div>
                     </div>
                 </div>
