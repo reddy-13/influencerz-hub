@@ -41,6 +41,7 @@ const ProductionBoard = () => {
 
     const [columns, setColumns] = useState<any>(null);
     const [newTaskText, setNewTaskText] = useState("");
+    const [newTaskTag, setNewTaskTag] = useState("Draft");
     const [isAddingTaskTo, setIsAddingTaskTo] = useState<string | null>(null);
 
     // Sync server tasks to local columns state when loaded
@@ -100,10 +101,11 @@ const ProductionBoard = () => {
         createTask({
             content: newTaskText,
             status: columnId,
-            tag: "Draft"
+            tag: newTaskTag
         });
 
         setNewTaskText("");
+        setNewTaskTag("Draft");
         setIsAddingTaskTo(null);
     };
 
@@ -167,8 +169,8 @@ const ProductionBoard = () => {
                                                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
                                                                 <span style={{
                                                                     fontSize: "10px",
-                                                                    background: "var(--primary)",
-                                                                    color: "var(--primary-text)",
+                                                                    background: task.tag === 'Urgent' ? 'rgba(239, 68, 68, 0.2)' : task.tag === 'Sponsor' ? 'rgba(139, 92, 246, 0.2)' : task.tag === 'Research' ? 'rgba(59, 130, 246, 0.2)' : 'var(--primary)',
+                                                                    color: task.tag === 'Urgent' ? '#ef4444' : task.tag === 'Sponsor' ? '#a78bfa' : task.tag === 'Research' ? '#60a5fa' : 'var(--primary-text)',
                                                                     fontWeight: "600",
                                                                     padding: "2px 6px",
                                                                     borderRadius: "4px",
@@ -188,6 +190,19 @@ const ProductionBoard = () => {
                                                             <p style={{ margin: 0, fontSize: "13px", color: "var(--text-main)", fontWeight: "500", lineHeight: "1.4" }}>
                                                                 {task.content}
                                                             </p>
+                                                            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px", alignItems: "center" }}>
+                                                                <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
+                                                                    {new Date(task.createdAt).toLocaleDateString()}
+                                                                </span>
+                                                                <div style={{
+                                                                    width: "20px", height: "20px", borderRadius: "50%",
+                                                                    background: "var(--accent)", color: "white",
+                                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                                    fontSize: "10px", fontWeight: "bold"
+                                                                }}>
+                                                                    Me
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </Draggable>
@@ -195,20 +210,48 @@ const ProductionBoard = () => {
                                             {provided.placeholder}
 
                                             {isAddingTaskTo === column.id && (
-                                                <div className="kanban-card" style={{ padding: "8px" }}>
+                                                <div className="kanban-card" style={{ padding: "8px", display: "flex", flexDirection: "column", gap: "8px" }}>
                                                     <input
                                                         autoFocus
                                                         className="input-field"
                                                         style={{ background: "transparent", border: "none", padding: "4px" }}
-                                                        placeholder="Type title and press enter..."
+                                                        placeholder="Type your task..."
                                                         value={newTaskText}
                                                         onChange={(e) => setNewTaskText(e.target.value)}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') handleAddTask(column.id);
                                                             if (e.key === 'Escape') setIsAddingTaskTo(null);
                                                         }}
-                                                        onBlur={() => handleAddTask(column.id)}
                                                     />
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                        <select
+                                                            value={newTaskTag}
+                                                            onChange={(e) => setNewTaskTag(e.target.value)}
+                                                            style={{
+                                                                background: "var(--background-card-hover)",
+                                                                color: "var(--text-main)",
+                                                                border: "1px solid var(--border)",
+                                                                padding: "4px",
+                                                                borderRadius: "4px",
+                                                                fontSize: "11px",
+                                                                cursor: "pointer"
+                                                            }}
+                                                        >
+                                                            <option value="Draft">Draft</option>
+                                                            <option value="Research">Research</option>
+                                                            <option value="Urgent">Urgent</option>
+                                                            <option value="Sponsor">Sponsor</option>
+                                                        </select>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleAddTask(column.id);
+                                                            }}
+                                                            style={{ background: "var(--primary)", border: "none", color: "var(--primary-text)", padding: "4px 12px", borderRadius: "4px", fontSize: "11px", cursor: "pointer", fontWeight: "bold" }}
+                                                        >
+                                                            Save
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
